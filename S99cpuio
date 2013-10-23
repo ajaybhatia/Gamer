@@ -1,0 +1,82 @@
+#!/system/bin/sh
+# Project Xtreme(TM) - CPU Governor & I/O Scheduler Setter with MinFree
+# by Ajay Bhatia, 2013
+
+# Copyright (C) 2013 Ajay Bhatia
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, 
+# or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.  
+# If not, see <http://www.gnu.org/licenses/>
+
+#################################################
+# PLACE I/O SCHEDULER HERE!!!
+#################################################
+
+for j in /sys/block/*; do
+  if [ -e ${j}/queue/scheduler ]; then
+    SCHED="noop" #<===={PUT SCHEDULER HERE}====#
+    busybox chmod -f 644 ${j}/queue/scheduler
+    busybox echo $SCHED >> ${j}/queue/scheduler
+  fi
+done
+
+#################################################
+# PLACE GOVERNOR HERE!!!
+#################################################
+
+for k in "cpu0" "cpu1" "cpu2" "cpu3" "cpu4" "cpu5" "cpu6" "cpu7"; do
+  if [ -e /sys/devices/system/cpu/${k}/cpufreq/scaling_governor ]; then
+     GOV="ondemand" #<===={PUT GOVERNOR HERE}====#
+     busybox chmod -f 644 /sys/devices/system/cpu/${k}/cpufreq/*
+     busybox echo $GOV >> /sys/devices/system/cpu/${k}/cpufreq/scaling_governor
+  fi
+done
+
+#################################################
+# PLACE MAX FREQ HERE!!!
+#################################################
+
+for c in "cpu0" "cpu1" "cpu2" "cpu3" "cpu4" "cpu5" "cpu6" "cpu7"; do
+  if [ -e /sys/devices/system/cpu/${c}/cpufreq/scaling_max_freq ]; then
+    MAX="1209000" #<===={PUT MAX FREQ HERE}====#
+    busybox chmod -f 644 /sys/devices/system/cpu/${c}/cpufreq/scaling_max_freq
+    busybox echo $MAX >> /sys/devices/system/cpu/${c}/cpufreq/scaling_max_freq
+  fi
+done
+
+#################################################
+# PLACE MIN FREQ HERE!!!
+#################################################
+
+for c in "cpu0" "cpu1" "cpu2" "cpu3" "cpu4" "cpu5" "cpu6" "cpu7"; do
+  if [ -e /sys/devices/system/cpu/${c}/cpufreq/scaling_min_freq ]; then
+    MIN="250250" #<===={PUT MIN FREQ HERE}====#
+    busybox chmod -f 644 /sys/devices/system/cpu/${c}/cpufreq/scaling_min_freq
+    busybox echo $MIN >> /sys/devices/system/cpu/${c}/cpufreq/scaling_min_freq
+  fi
+done
+
+#################################################
+# PROFILES !!!
+#################################################
+
+#################################################
+# MINFREE ADJUSTER !!!
+#################################################
+
+sleep 15
+
+echo "2048,3072,6144,15360,17920,20480" > /sys/module/lowmemorykiller/parameters/minfree
+
+sync;
+echo "3" > /proc/sys/vm/drop_caches
+sleep 1
+echo "1" > /proc/sys/vm/drop_caches

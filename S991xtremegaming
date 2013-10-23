@@ -1,0 +1,451 @@
+#!/system/bin/sh
+# Project Xtreme(TM) - Xtreme Gaming(R) script - Build 1
+# by Ajay Bhatia, 2013
+
+# Copyright (C) 2013 Ajay Bhatia
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, 
+# or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.  
+# If not, see <http://www.gnu.org/licenses/>
+
+for k in "cpu0" "cpu1" "cpu2" "cpu3" "cpu4" "cpu5" "cpu6" "cpu7"; do
+  if [ -e /sys/devices/system/cpu/${k}/cpufreq/scaling_governor ]; then
+     GOV="ondemand"
+     busybox chmod -f 644 /sys/devices/system/cpu/${k}/cpufreq/*
+     busybox echo $GOV >> /sys/devices/system/cpu/${k}/cpufreq/scaling_governor
+  fi
+done
+
+for j in /sys/block/*; do
+  if [ -e ${j}/queue/scheduler ]; then
+    SCHED="noop"
+    busybox chmod -f 644 ${j}/queue/scheduler
+    busybox echo $SCHED >> ${j}/queue/scheduler
+  fi
+done
+
+setprop ENFORCE_PROCESS_LIMIT false
+setprop ro.kernel.android.checkjni 0
+setprop windowsmgr.max_events_per_sec 90
+setprop debug.kill_allocating_task 0
+
+sleep 15;
+
+if [ -e /proc/sys/vm/oom_kill_allocating_task ]; then
+  echo 1 > /proc/sys/vm/oom_kill_allocating_task
+fi
+if [ -e /proc/sys/vm/dirty_ratio ]; then
+  echo 1 > /proc/sys/vm/dirty_ratio
+fi
+if [ -e /proc/sys/vm/dirty_background_ratio ]; then
+  echo 2 > /proc/sys/vm/dirty_background_ratio
+fi
+if [ -e /proc/sys/vm/panic_on_oom ]; then
+  echo 0 > /proc/sys/vm/panic_on_oom
+fi
+if [ -e /proc/sys/kernel/panic ]; then 
+  echo 0 > /proc/sys/kernel/panic
+fi
+if [ -e /proc/sys/kernel/panic_on_oops ]; then 
+  echo 0 > /proc/sys/kernel/panic_on_oops
+fi
+if [ -e /proc/sys/kernel/hung_task_timeout_secs ]; then 
+  echo 0 > /proc/sys/kernel/hung_task_timeout_secs
+fi
+if [ -e /proc/sys/kernel/softlockup_panic ]; then 
+  echo 0 > /proc/sys/kernel/softlockup_panic
+fi
+if [ -e /proc/sys/vm/drop_caches ]; then
+  sync; 
+  echo 1 > /proc/sys/vm/drop_caches
+fi
+if [ -e /proc/sys/vm/vfs_cache_pressure ]; then
+  echo 300 > /proc/sys/vm/vfs_cache_pressure
+fi
+if [ -e /proc/sys/fs/lease-break-time ]; then 
+  echo 10 > /proc/sys/fs/lease-break-time
+fi
+if [ -e /proc/sys/vm/dirty_writeback_centisecs ]; then
+  echo 2000 > /proc/sys/vm/dirty_writeback_centisecs
+fi
+if [ -e /proc/sys/vm/dirty_expire_centisecs ]; then
+  echo 1000 > /proc/sys/vm/dirty_expire_centisecs
+fi
+if [ -e /proc/sys/vm/page-cluster ]; then
+  echo 8 > /proc/sys/vm/page-cluster
+fi
+if [ -e /proc/sys/fs/lease-break-time ]; then 
+  echo 10 > /proc/sys/fs/lease-break-time
+fi
+
+busybox mount -o remount,noatime,nobh,nodiratime,nodelalloc,noauto_da_alloc,barrier=0 /system /system
+busybox mount -o remount,noatime,nobh,nodiratime,nodelalloc,noauto_da_alloc,barrier=0 /cache /cache
+busybox mount -o remount,noatime,nodiratime,delalloc,noauto_da_alloc,barrier=0 /data /data
+busybox mount -o remount,noatime,nodiratime auto /proc
+busybox mount -o remount,noatime,nodiratime auto /mnt/sdcard
+
+READ_AHEAD_KB=2048
+READ_AHEAD_SEC=2048
+if [ -e /sys/block/mmcblk0/bdi/read_ahead_kb ]; then
+  echo $READ_AHEAD_KB > /sys/block/mmcblk0/bdi/read_ahead_kb 
+fi
+if [ -e /sys/block/mmcblk1/bdi/read_ahead_kb ]; then
+  echo $READ_AHEAD_KB > /sys/block/mmcblk1/bdi/read_ahead_kb
+fi
+if [ -e /sys/block/stl10/bdi/read_ahead_kb ];
+then
+  echo $READ_AHEAD_KB > /sys/block/stl10/bdi/read_ahead_kb
+fi
+if [ -e /sys/block/stl11/bdi/read_ahead_kb ];
+then
+  echo $READ_AHEAD_KB > /sys/block/stl11/bdi/read_ahead_kb
+fi
+if [ -e /sys/block/stl9/bdi/read_ahead_kb ];
+then
+  echo $READ_AHEAD_KB > /sys/block/stl9/bdi/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:0/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:0/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:1/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:1/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:2/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:2/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:3/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:3/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:4/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:4/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:5/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:5/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:6/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:6/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/7:7/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/7:7/read_ahead_kb
+fi
+if [ -e /sys/devices/virtual/bdi/default/read_ahead_kb ];
+then
+  echo $READ_AHEAD_SEC > /sys/devices/virtual/bdi/default/read_ahead_kb
+fi
+
+# AP boost
+MFK=`cat /proc/sys/vm/min_free_kbytes`
+TOTALMEM=`free | awk '{ print $2 }' | sed -n 2p`
+REALTOTALMEM=$(($TOTALMEM-$MFK))
+if getprop | grep -q dalvik.vm.heapgrowthlimit; then
+	dalvikvmheapsize=`getprop dalvik.vm.heapsize | sed 's/m//'`
+	dalvikvmheapgrowthlimit=$(($dalvikvmheapsize/2))
+	setprop dalvik.vm.heapsize "$dalvikvmheapsize"m
+	setprop dalvik.vm.heapgrowthlimit "$dalvikvmheapgrowthlimit"m
+else
+	static=512
+	if [ "$REALTOTALMEM" -le 524288 ]; then
+		dalvikvmheapsize=$(($static/4))
+	elif [ "$REALTOTALMEM" -le 1048576 ]; then
+		dalvikvmheapsize=$(($static/2))
+	elif [ "$REALTOTALMEM" -le 2097152 ]; then
+		dalvikvmheapsize=$static
+	else
+		dalvikvmheapsize=$static
+	fi
+	dalvikvmheapgrowthlimit=$(($dalvikvmheapsize/2))
+	setprop dalvik.vm.heapsize "$dalvikvmheapsize"m
+	setprop dalvik.vm.heapgrowthlimit "$dalvikvmheapgrowthlimit"m
+fi
+if ! getprop | grep -q dalvik.vm.heapstartsize; then
+	if [ "$REALTOTALMEM" -le 524288 ]; then
+		setprop dalvik.vm.heapstartsize 5m
+	elif [ "$REALTOTALMEM" -le 1048576 ]; then
+		setprop dalvik.vm.heapstartsize 8m
+	elif [ "$REALTOTALMEM" -le 2097152 ]; then
+		setprop dalvik.vm.heapstartsize 16m
+	else
+		setprop dalvik.vm.heapstartsize 16m
+	fi
+fi
+
+# Rapid Storage Boost Technology
+(while true; do
+	MFK=`cat /proc/sys/vm/min_free_kbytes`
+	TOTALMEM=`free | awk '{ print $2 }' | sed -n 2p`
+	REALTOTALMEM=$(($TOTALMEM-$MFK))
+	if getprop | grep -q dalvik.vm.heapgrowthlimit; then
+		dalvikvmheapgrowthlimit=`getprop dalvik.vm.heapgrowthlimit | sed 's/m//'`
+		dalvikvmheapsize=`getprop dalvik.vm.heapsize | sed 's/m//'`
+		dalvik_ratio=$(($dalvikvmheapgrowthlimit*100))
+		dirty=$(($dalvik_ratio/$dalvikvmheapsize))
+		m=$(($dirty*10))
+		n=$(($dalvikvmheapgrowthlimit*1000/$dalvikvmheapsize))
+		sub=$(($n-$m))
+		if [ "$sub" -ge 5 ]; then
+			dirty=$(($dirty+1))
+		fi
+		background=$(($dirty/2))
+		x=$(($background*10))
+		y=$(($dirty*10/2))
+		add=$(($y-$x))
+		if [ "$add" != 0 ]; then 
+			background=$dirty
+		fi
+		if [ -e "/proc/sys/vm/dirty_ratio" ]; then
+			if [ `cat /proc/sys/vm/dirty_ratio` != "$dirty" ]; then
+				echo "$dirty" > /proc/sys/vm/dirty_ratio
+			fi
+		fi
+		if [ -e "/proc/sys/vm/dirty_background_ratio" ]; then
+			if [ `cat /proc/sys/vm/dirty_background_ratio` != "$background" ]; then
+				echo "$background" > /proc/sys/vm/dirty_background_ratio
+			fi
+		fi
+	else
+		static=512
+		if [ "$REALTOTALMEM" -le 524288 ]; then
+			dalvikvmheapsize=$(($static/4))
+		elif [ "$REALTOTALMEM" -le 1048576 ]; then
+			dalvikvmheapsize=$(($static/2))
+		elif [ "$REALTOTALMEM" -le 2097152 ]; then
+			dalvikvmheapsize=$static
+		else
+			dalvikvmheapsize=$static
+		fi
+		dalvikvmheapgrowthlimit=`getprop dalvik.vm.heapsize | sed 's/m//'`
+		dalvik_ratio=$(($dalvikvmheapgrowthlimit*100))
+		dirty=$(($dalvik_ratio/$dalvikvmheapsize))
+		m=$(($dirty*10))
+		n=$(($dalvikvmheapgrowthlimit*1000/$dalvikvmheapsize))
+		sub=$(($n-$m))
+		if [ "$sub" -ge 5 ]; then
+			dirty=$(($dirty+1))
+		fi
+		background=$(($dirty/2))
+		x=$(($background*10))
+		y=$(($dirty*10/2))
+		add=$(($y-$x))
+		if [ "$add" != 0 ]; then 
+			background=$dirty
+		fi
+		if [ -e "/proc/sys/vm/dirty_ratio" ]; then
+			if [ `cat /proc/sys/vm/dirty_ratio` != "$dirty" ]; then
+				echo "$dirty" > /proc/sys/vm/dirty_ratio
+			fi
+		fi
+		if [ -e "/proc/sys/vm/dirty_background_ratio" ]; then
+			if [ `cat /proc/sys/vm/dirty_background_ratio` != "$background" ]; then
+				echo "$background" > /proc/sys/vm/dirty_background_ratio
+			fi
+		fi
+	fi
+	if [ -e "/proc/sys/vm/dirty_writeback_centisecs" ]; then
+		if [ `cat /proc/sys/vm/dirty_writeback_centisecs` != 27640520 ]; then
+			echo 27640520 > /proc/sys/vm/dirty_writeback_centisecs
+		fi
+	fi
+	if [ -e "/proc/sys/vm/dirty_expire_centisecs" ]; then
+		if [ `cat /proc/sys/vm/dirty_expire_centisecs` != 0 ]; then
+			echo 0 > /proc/sys/vm/dirty_expire_centisecs
+		fi
+	fi
+  rsb_refresh_sec_interval=4
+  if [ "$rsb_refresh_sec_interval" ]; then
+    if [ "$rsb_refresh_sec_interval" -le 0 ]; then
+      rsb_refresh_sec_interval=4
+    fi
+  fi
+	sleep $rsb_refresh_sec_interval
+done &)
+
+# Core Engine
+# Alternative to renice processes method.
+setprop ENFORCE_PROCESS_LIMIT false
+# RT-Styled Engine
+(while true; do
+	MFK=`cat /proc/sys/vm/min_free_kbytes`
+	TOTALMEM=`free | awk '{ print $2 }' | sed -n 2p`
+	REALTOTALMEM=$(($TOTALMEM-$MFK))
+	lowpage=$(($MFK/4))
+	if getprop | grep -q dalvik.vm.heapgrowthlimit; then
+		requiredsize=`getprop dalvik.vm.heapgrowthlimit | sed 's/m//'`
+	else
+		requiredsize=`getprop dalvik.vm.heapsize | sed 's/m//'`
+	fi
+	pagelimiter=$(($requiredsize*1024/4))
+	#if [ -e "/proc/`pgrep launcher`/status" ]; then
+	#	launchersize=`cat /proc/$(pgrep launcher)/status | grep VmRSS | awk '{print $2}'`
+	#	if [ "$launchersize" -le "$requiredsize" ]; then
+	#		if [ "`cat /proc/$(pgrep launcher)/oom_adj`" != -16 ]; then
+	#			echo "-16" > /proc/`pgrep launcher`/oom_adj
+	#		fi
+	#	fi
+	#fi
+	#if [ -e "/proc/`pgrep acore`/status" ]; then
+	#	acoresize=`cat /proc/$(pgrep acore)/status | grep VmRSS | awk '{print $2}'`
+	#	if [ "$acoresize" -le "$requiredsize" ]; then	
+	#		if [ "`cat /proc/$(pgrep acore)/oom_adj`" != -12 ]; then
+	#			echo "-12" > /proc/`pgrep acore`/oom_adj
+	#		fi
+	#	fi
+	#fi
+	if [ -e "/sys/module/lowmemorykiller/parameters/adj" ]; then
+		if [ `cat /sys/module/lowmemorykiller/parameters/adj` != -12,0,1,2,9,15 ]; then
+			echo "-12,0,1,2,9,15" > /sys/module/lowmemorykiller/parameters/adj
+		fi
+	fi
+	if [ -e "/sys/module/lowmemorykiller/parameters/minfree" ]; then
+		if [ "$REALTOTALMEM" -le 524288 ]; then
+			if [ `cat /sys/module/lowmemorykiller/parameters/minfree` != "$lowpage,$pagelimiter,$pagelimiter,$pagelimiter,$pagelimiter,$pagelimiter" ]; then
+				echo "$lowpage,$pagelimiter,$pagelimiter,$pagelimiter,$pagelimiter,$pagelimiter" > /sys/module/lowmemorykiller/parameters/minfree
+			fi
+		elif [ "$REALTOTALMEM" -le 1048576 ]; then
+			if [ `cat /sys/module/lowmemorykiller/parameters/minfree` != "$lowpage,$pagelimiter,$pagelimiter,$pagelimiter,$lowpage,$pagelimiter" ]; then
+				echo "$lowpage,$pagelimiter,$pagelimiter,$pagelimiter,$lowpage,$pagelimiter" > /sys/module/lowmemorykiller/parameters/minfree
+			fi
+		elif [ "$REALTOTALMEM" -le 2097152 ]; then
+			if [ `cat /sys/module/lowmemorykiller/parameters/minfree` != "$lowpage,$pagelimiter,$lowpage,$pagelimiter,$lowpage,$pagelimiter" ]; then
+				echo "$lowpage,$pagelimiter,$lowpage,$pagelimiter,$lowpage,$pagelimiter" > /sys/module/lowmemorykiller/parameters/minfree
+			fi
+		else
+			if [ `cat /sys/module/lowmemorykiller/parameters/minfree` != "$lowpage,$pagelimiter,$lowpage,$pagelimiter,$lowpage,$pagelimiter" ]; then
+				echo "$lowpage,$pagelimiter,$lowpage,$pagelimiter,$lowpage,$pagelimiter" > /sys/module/lowmemorykiller/parameters/minfree
+			fi
+		fi
+	fi
+  core_refresh_sec_interval=4
+  if [ "$core_refresh_sec_interval" ]; then
+    if [ "$core_refresh_sec_interval" -le 0 ]; then
+      core_refresh_sec_interval=4
+    fi
+  fi
+	sleep $core_refresh_sec_interval
+done &)
+
+# MPEngine integrated
+(while true; do
+  mpe9x_refresh_sec_interval=4
+  if [ "$mpe9x_refresh_sec_interval" ]; then
+    if [ "$mpe9x_refresh_sec_interval" -le 1 ]; then
+      mpe9x_refresh_sec_interval=4
+    fi
+  fi
+	SKIP=$(($mpe9x_refresh_sec_interval/2))
+	SLUG=$(($mpe9x_refresh_sec_interval*2))
+	MFK=`cat /proc/sys/vm/min_free_kbytes`
+	FREEMEM=`free | awk '{ print $4 }' | sed -n 2p`
+	CACHESIZE=`cat /proc/meminfo | grep Cached | awk '{print $2}' | sed -n 1p`
+	TOTALMEM=`free | awk '{ print $2 }' | sed -n 2p`
+	REALTOTALMEM=$(($TOTALMEM-$MFK))
+	MEMINUSE=$(($CACHESIZE+$FREEMEM))
+  half_registered_ram_interval=6
+  if [ "$half_registered_ram_interval" ]; then
+    if [ "$half_registered_ram_interval" -le 0 ]; then
+      half_registered_ram_interval=6
+    fi
+  fi
+  quarter_registered_ram_interval=2
+  if [ "$quarter_registered_ram_interval" ]; then
+    if [ "$quarter_registered_ram_interval" -le 0 ]; then
+      quarter_registered_ram_interval=2
+    fi
+  fi
+  enable_flush_timing=0
+  if [ "$enable_flush_timing" ]; then
+    if [ "$enable_flush_timing" != 0 ] && [ "$enable_flush_timing" != 1 ]; then
+      enable_flush_timing=0
+    fi
+  fi
+	DEADLINE=$(($REALTOTALMEM-$MEMINUSE))
+	DEADEND=$(($DEADLINE/$half_registered_ram_interval))
+	DEADEND2=$(($DEADEND/$quarter_registered_ram_interval))
+	if [ "$FREEMEM" -le "$MFK" ]; then
+		if [ "$enable_flush_timing" == 0 ]; then
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+		elif [ "$enable_flush_timing" == 1 ]; then
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+		else
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+		fi
+	elif [ "$FREEMEM" -gt "$MFK" ] && [ "$FREEMEM" -le "$DEADEND2" ]; then
+		if [ "$enable_flush_timing" == 0 ]; then
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+		elif [ "$enable_flush_timing" == 1 ]; then
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+		else
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $SKIP
+		fi
+	elif [ "$FREEMEM" -gt "$DEADEND2" ] && [ "$FREEMEM" -le "$DEADEND" ]; then
+		if [ "$enable_flush_timing" == 0 ]; then
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $mpe9x_refresh_sec_interval
+		elif [ "$enable_flush_timing" == 1 ]; then
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $mpe9x_refresh_sec_interval
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $mpe9x_refresh_sec_interval
+		else
+			busybox sync; echo "1" > /proc/sys/vm/drop_caches
+			sleep $mpe9x_refresh_sec_interval
+		fi
+	elif [ "$FREEMEM" -gt "$DEADEND" ] && [ "$FREEMEM" -le "$MEMINUSE" ]; then
+		if [ "$enable_flush_timing" == 0 ]; then
+			sleep $mpe9x_refresh_sec_interval
+		elif [ "$enable_flush_timing" == 1 ]; then
+			sleep $SLUG
+		else
+			sleep $mpe9x_refresh_sec_interval
+		fi
+	else
+		if [ "$enable_flush_timing" == 0 ]; then
+			sleep $mpe9x_refresh_sec_interval
+		elif [ "$enable_flush_timing" == 1 ]; then
+			sleep $SLUG
+		else
+			sleep $mpe9x_refresh_sec_interval
+		fi
+	fi
+done &)

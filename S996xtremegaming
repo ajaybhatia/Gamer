@@ -1,0 +1,683 @@
+#!/system/bin/sh
+# Project Xtreme(TM) - Xtreme Gaming(R) script - Build 6
+# by Ajay Bhatia, 2013
+
+# Copyright (C) 2013 Ajay Bhatia
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, 
+# or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.  
+# If not, see <http://www.gnu.org/licenses/>
+
+# Project Xtreme's RAM Calculator
+installedram() {
+  RAM=`free -m | awk '/Mem:/{print $2}'`
+  if [ $RAM -gt 128 ] && [ $RAM -lt 256 ]; then
+    RAM=256
+  elif [ $RAM -gt 256 ] && [ $RAM -lt 512 ]; then
+    RAM=512
+  elif [ $RAM -gt 512 ] && [ $RAM -lt 768 ]; then
+    RAM=768
+  elif [ $RAM -gt 768 ] && [ $RAM -lt 1024 ]; then
+    RAM=1024
+  elif [ $RAM -gt 1024 ] && [ $RAM -lt 2048 ]; then
+    RAM=2048
+  elif [ $RAM -gt 2048 ] && [ $RAM -lt 4096 ]; then
+    RAM=4096
+  else
+    RAM=8192
+  fi
+}
+
+# Project Xtreme's Default
+lightlmk() {
+  FOREGROUND_APP=$((($RAM*2/100)*1024/4))
+  VISIBLE_APP=$((($RAM*3/100)*1024/4))
+  SECONDARY_SERVER=$((($RAM*6/100)*1024/4))
+  HIDDEN_APP=$((($RAM*15/100)*1024/4))
+  CONTENT_PROVIDER=$((($RAM*17/100)*1024/4))
+  EMPTY_APP=$((($RAM*18/100)*1024/4))
+  echo $FOREGROUND_APP,$VISIBLE_APP,$SECONDARY_SERVER,$HIDDEN_APP,$CONTENT_PROVIDER,$EMPTY_APP > /sys/module/lowmemorykiller/parameters/minfree	
+}
+
+# Project Xtreme's Moderate
+moderatelmk() {
+  FOREGROUND_APP=$((($RAM*3/100)*1024/4))
+  VISIBLE_APP=$((($RAM*4/100)*1024/4))
+  SECONDARY_SERVER=$((($RAM*8/100)*1024/4))
+  HIDDEN_APP=$((($RAM*21/100)*1024/4))
+  CONTENT_PROVIDER=$((($RAM*22/100)*1024/4))
+  EMPTY_APP=$((($RAM*24/100)*1024/4))
+  echo $FOREGROUND_APP,$VISIBLE_APP,$SECONDARY_SERVER,$HIDDEN_APP,$CONTENT_PROVIDER,$EMPTY_APP > /sys/module/lowmemorykiller/parameters/minfree	
+}
+
+# Project Xtreme's Hard
+hardlmk() {
+  FOREGROUND_APP=$((($RAM*3/100)*1024/4))
+  VISIBLE_APP=$((($RAM*5/100)*1024/4))
+  SECONDARY_SERVER=$((($RAM*11/100)*1024/4))
+  HIDDEN_APP=$((($RAM*26/100)*1024/4))
+  CONTENT_PROVIDER=$((($RAM*29/100)*1024/4))
+  EMPTY_APP=$((($RAM*31/100)*1024/4))
+  echo $FOREGROUND_APP,$VISIBLE_APP,$SECONDARY_SERVER,$HIDDEN_APP,$CONTENT_PROVIDER,$EMPTY_APP > /sys/module/lowmemorykiller/parameters/minfree
+}
+
+busybox mount -o rw,remount /system 2>/dev/null
+busybox mount -o rw,remount /data 2>/dev/null
+busybox mount -o rw,remount rootfs / 2>/dev/null
+
+if [ ! -d "/sqlite_stmt_journals" ]; then
+	mkdir /sqlite_stmt_journals
+	chown 0.0 /sqlite_stmt_journals
+	chmod 777 /sqlite_stmt_journals
+fi
+
+cat > /system/bin/freeall <<EOF
+#!/system/bin/sh 
+# Project Xtreme - Free RAM
+# by Ajay Bhatia, 2013
+
+# Copyright (C) 2013 Ajay Bhatia
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, 
+# or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.  
+# If not, see <http://www.gnu.org/licenses/>
+
+installedram() {
+  RAM=\`free -m | awk '/Mem:/{print \$2}'\`
+  if [ \$RAM -gt 128 ] && [ \$RAM -lt 256 ]; then
+    RAM=256
+  elif [ \$RAM -gt 256 ] && [ \$RAM -lt 512 ]; then
+    RAM=512
+  elif [ \$RAM -gt 512 ] && [ \$RAM -lt 768 ]; then
+    RAM=768
+  elif [ \$RAM -gt 768 ] && [ \$RAM -lt 1024 ]; then
+    RAM=1024
+  elif [ \$RAM -gt 1024 ] && [ \$RAM -lt 2048 ]; then
+    RAM=2048
+  elif [ \$RAM -gt 2048 ] && [ \$RAM -lt 4096 ]; then
+    RAM=4096
+  else
+    RAM=8192
+  fi
+}
+
+# Project Xtreme's Default
+lightlmk() {
+  FOREGROUND_APP=\$(((\$RAM*2/100)*1024/4))
+  VISIBLE_APP=\$(((\$RAM*3/100)*1024/4))
+  SECONDARY_SERVER=\$(((\$RAM*6/100)*1024/4))
+  HIDDEN_APP=\$(((\$RAM*15/100)*1024/4))
+  CONTENT_PROVIDER=\$(((\$RAM*17/100)*1024/4))
+  EMPTY_APP=\$(((\$RAM*18/100)*1024/4))
+  echo \$FOREGROUND_APP,\$VISIBLE_APP,\$SECONDARY_SERVER,\$HIDDEN_APP,\$CONTENT_PROVIDER,\$EMPTY_APP > /sys/module/lowmemorykiller/parameters/minfree	
+}
+
+# Project Xtreme's Moderate
+moderatelmk() {
+  FOREGROUND_APP=\$(((\$RAM*3/100)*1024/4))
+  VISIBLE_APP=\$(((\$RAM*4/100)*1024/4))
+  SECONDARY_SERVER=\$(((\$RAM*8/100)*1024/4))
+  HIDDEN_APP=\$(((\$RAM*21/100)*1024/4))
+  CONTENT_PROVIDER=\$(((\$RAM*22/100)*1024/4))
+  EMPTY_APP=\$(((\$RAM*24/100)*1024/4))
+  echo \$FOREGROUND_APP,\$VISIBLE_APP,\$SECONDARY_SERVER,\$HIDDEN_APP,\$CONTENT_PROVIDER,\$EMPTY_APP > /sys/module/lowmemorykiller/parameters/minfree	
+}
+
+# Project Xtreme's Hard
+hardlmk() {
+  FOREGROUND_APP=\$(((\$RAM*3/100)*1024/4))
+  VISIBLE_APP=\$(((\$RAM*5/100)*1024/4))
+  SECONDARY_SERVER=\$(((\$RAM*11/100)*1024/4))
+  HIDDEN_APP=\$(((\$RAM*26/100)*1024/4))
+  CONTENT_PROVIDER=\$(((\$RAM*29/100)*1024/4))
+  EMPTY_APP=\$(((\$RAM*31/100)*1024/4))
+  echo \$FOREGROUND_APP,\$VISIBLE_APP,\$SECONDARY_SERVER,\$HIDDEN_APP,\$CONTENT_PROVIDER,\$EMPTY_APP > /sys/module/lowmemorykiller/parameters/minfree
+}
+
+# FPS Booster
+setprop persist.sys.NV_FPSLIMIT 60
+setprop persist.sys.NV_POWERMODE 1
+setprop persist.sys.NV_PROFVER 15
+setprop persist.sys.NV_STEREOCTRL 0
+setprop persist.sys.NV_STEREOSEPCHG 0
+setprop persist.sys.NV_STEREOSEP 20
+
+# 3D optimizations
+setprop hw3d.force 1
+setprop hw2d.force 1
+setprop debug.performance.tuning 1
+setprop debug.gr.numframebuffers 3
+setprop debug.qctwa.statusbar 1
+setprop debug.qctwa.perservebuf 1
+setprop com.qc.hardware true
+setprop debug.sf.hw 1
+setprop video.accelerate.hw 1
+
+# RAM optimizations
+setprop persist.sys.purgeable_assets 1
+setprop dalvik.vm.verify-bytecode false
+setprop debug.kill_allocating_task 0
+setprop ENFORCE_PROCESS_LIMIT false
+setprop ro.kernel.android.checkjni 0
+
+# Liquid Smooth UI
+setprop persist.service.lgospd.enable 0
+setprop persist.service.pcsync.enable 0
+setprop windowsmgr.max_events_per_sec 90
+setprop touch.presure.scale 0.001
+
+# LMK tunning
+chown root /sys/module/lowmemorykiller/parameters/minfree
+chmod 777 /sys/module/lowmemorykiller/parameters/minfree
+installedram
+lightlmk
+chmod 664 /sys/module/lowmemorykiller/parameters/minfree
+
+# FS, Kernel & VM Tuner
+sysctl -q -w fs.nr_open=1053696 2>/dev/null
+sysctl -q -w fs.inotify.max_queued_events=32000 2>/dev/null
+sysctl -q -w fs.inotify.max_user_instances=256 2>/dev/null
+sysctl -q -w fs.inotify.max_user_watches=10240 2>/dev/null
+sysctl -q -w fs.lease-break-time=10 2>/dev/null
+sysctl -q -w fs.file-max=165164 2>/dev/null
+sysctl -q -w fs.lease-break-time=10 2>/dev/null
+sysctl -q -w fs.file-max=65536 2>/dev/null
+sysctl -q -w kernel.threads-max=525810 2>/dev/null
+sysctl -q -w kernel.random.write_wakeup_threshold=256 2>/dev/null
+sysctl -q -w kernel.random.read_wakeup_threshold=128 2>/dev/null
+sysctl -q -w kernel.sched_compat_yield=1 2>/dev/null
+sysctl -q -w kernel.panic=5 2>/dev/null
+sysctl -q -w kernel.panic_on_oops=1 2>/dev/null
+sysctl -q -w kernel.msgmni=2048 2>/dev/null
+sysctl -q -w kernel.msgmax=64000 2>/dev/null
+sysctl -q -w kernel.shmmni=4096 2>/dev/null
+sysctl -q -w kernel.shmall=2097152 2>/dev/null
+sysctl -q -w kernel.shmmax=268435456 2>/dev/null
+sysctl -q -w kernel.sem=500 512000 64 2048 2>/dev/null
+sysctl -q -w kernel.sched_features=24189 2>/dev/null
+sysctl -q -w kernel.hung_task_timeout_secs=30 2>/dev/null
+sysctl -q -w kernel.sched_latency_ns=18000000 2>/dev/null
+sysctl -q -w kernel.sched_min_granularity_ns=1500000 2>/dev/null
+sysctl -q -w kernel.sched_wakeup_granularity_ns=3000000 2>/dev/null
+sysctl -q -w kernel.sched_shares_ratelimit=256000 2>/dev/null
+sysctl -q -w kernel.sched_child_runs_first=0 2>/dev/null
+sysctl -q -w vm.dirty_ratio=60 2>/dev/null
+sysctl -q -w vm.dirty_background_ratio=60 2>/dev/null
+sysctl -q -w vm.oom_kill_allocating_task=1 2>/dev/null
+sysctl -q -w vm.overcommit_memory=1 2>/dev/null
+sysctl -q -w vm.page-cluster=8 2>/dev/null
+sysctl -q -w vm.drop_caches=3 2>/dev/null
+sysctl -q -w vm.min_free_kbytes=4096 2>/dev/null
+sysctl -q -w vm.panic_on_oom=0 2>/dev/null
+sysctl -q -w vm.dirty_expire_centisecs=1000 2>/dev/null
+sysctl -q -w vm.dirty_writeback_centisecs=2000 2>/dev/null
+sysctl -q -w vm.oom_kill_allocating_task=0 2>/dev/null
+sysctl -q -w vm.vfs_cache_pressure=1 2>/dev/null
+sysctl -q -w vm.min_free_order_shift=5 2>/dev/null
+sysctl -q -w vm.laptop_mode=0 2>/dev/null
+sysctl -q -w vm.block_dump=0 2>/dev/null
+
+# Garbage Remover
+busybox rm -f /dev/log/*
+busybox rm -f /data/*.log
+busybox rm -f /data/*.txt
+busybox rm -f /cache/*.apk
+busybox rm -f /cache/*.tmp
+busybox rm -f /cache/recovery/*
+busybox rm -f /data/local/*.apk
+busybox rm -f /data/local/*.log
+busybox rm -f /data/local/tmp/*.apk
+busybox rm -f /data/backup/pending/*.tmp
+busybox rm -f /data/system/usagestats/*.txt
+busybox rm -f /data/system/dropbox/*.txt
+busybox rm -f /data/tombstones/*.log
+busybox rm -f /data/tombstones/*.txt
+busybox rm -f /data/dalvik-cache/*.apk
+busybox rm -f /data/dalvik-cache/*.tmp
+busybox rm -rf /sdcard/LOST.DIR
+
+# Resource cleaner
+sync
+echo 1 > /proc/sys/vm/drop_caches;
+sync
+echo 10 > /proc/sys/vm/swappiness
+sleep 1;
+sync
+echo 1 > /proc/sys/vm/drop_caches;
+sync
+echo 0 > /proc/sys/vm/swappiness
+sleep 1;
+sync
+echo 1 > /proc/sys/vm/drop_caches;
+sync
+echo 20 > /proc/sys/vm/swappiness
+
+count=1
+
+echo
+echo "Magical Cleaning has been started."
+echo
+
+for i in \`ps | awk '/u0_/&&!/systemui|com.android.mail|com.android.exchange|com.google.android.gm|com.whatsapp|latin|input|keyboard|ai|swype|hacker|adwfreak|home|launcher|nextgen|shell|trebuchet|tw3|tw4|tw5|zeam/{print \$2}'\`; do
+  if [ \$count -eq 1 ]; then
+    echo "Wait..."
+    count=\$((\$count+1))
+  fi  
+  if [ \`cat /proc/\$i/oom_score_adj\` -gt 2 ]; then
+    pkg=\`ps | grep \$i | awk '{print \$9}'\`
+    am force-stop \$pkg 2>/dev/null;
+    am kill \$pkg 2>/dev/null;
+    echo 1000 > /proc/\$i/oom_score_adj 2>/dev/null;
+  fi 2>/dev/null;
+done 2>/dev/null;
+
+sync
+echo "3" > /proc/sys/vm/drop_caches
+
+echo
+echo "Memory Cleaning Operation Completed and you got \`free -m | awk '/Mem:/{print \$4,"MB"}'\` free" 
+echo
+EOF
+
+cat > /system/bin/drop <<EOF
+#!/system/bin/sh 
+# Project Xtreme - Drop Caches
+# by Ajay Bhatia, 2013
+
+# Copyright (C) 2013 Ajay Bhatia
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, 
+# or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.  
+# If not, see <http://www.gnu.org/licenses/>
+
+sync
+echo "3" > /proc/sys/vm/drop_caches
+
+echo
+echo "Cache dropped and you got \`free -m | awk '/Mem:/{print \$4,"MB"}'\` free"
+echo
+EOF
+
+chmod 777 /system/bin/freeall
+chmod 777 /system/bin/drop
+
+rm -r /sqlite_stmt_journals 2>/dev/null
+
+PROJECT_XTREME_LOG_DIR=/data/ProjectXtremeLogs/XtremeGaming.log;
+num=1
+
+busybox rm -r /data/ProjectXtremeLogs 2>/dev/null
+busybox mkdir /data/ProjectXtremeLogs 2>/dev/null
+
+busybox touch $PROJECT_XTREME_LOG_DIR 2>/dev/null
+
+busybox rm -r /data/cron
+
+echo "Project Xtreme(TM) Logging System" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "==========================================================" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "Xtreme Gaming(R) MOD" | tee -a $PROJECT_XTREME_LOG_DIR
+
+# FPS Booster
+setprop persist.sys.NV_FPSLIMIT 60
+setprop persist.sys.NV_POWERMODE 1
+setprop persist.sys.NV_PROFVER 15
+setprop persist.sys.NV_STEREOCTRL 0
+setprop persist.sys.NV_STEREOSEPCHG 0
+setprop persist.sys.NV_STEREOSEP 20
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) FPS Booster run at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# 3D optimizations
+setprop hw3d.force 1
+setprop hw2d.force 1
+setprop debug.performance.tuning 1
+setprop debug.gr.numframebuffers 3
+setprop debug.qctwa.statusbar 1
+setprop debug.qctwa.perservebuf 1
+setprop com.qc.hardware true
+setprop debug.sf.hw 1
+setprop video.accelerate.hw 1
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) 3D Optimizations done at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# RAM optimizations
+setprop persist.sys.purgeable_assets 1
+setprop dalvik.vm.verify-bytecode false
+setprop debug.kill_allocating_task 0
+setprop ENFORCE_PROCESS_LIMIT false
+setprop ro.kernel.android.checkjni 0
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) RAM Optimizations done at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Liquid Smooth UI
+setprop persist.service.lgospd.enable 0
+setprop persist.service.pcsync.enable 0
+setprop windowsmgr.max_events_per_sec 90
+setprop touch.presure.scale 0.001
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Touch Optimizations at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Zipalign with fix emission
+ZIPALIGNDB=/data/zipalign.db;
+if [ ! -f $ZIPALIGNDB ]; then
+	touch $ZIPALIGNDB;
+fi;
+
+# DB Vacuuming
+sqlite=/system/xbin/sqlite3
+for i in \
+`busybox find /data -iname "*.db"`; do \
+  $sqlite ${i} 'VACUUM;' 2>/dev/null
+  $sqlite ${i} 'REINDEX;' 2>/dev/null
+done 2>/dev/null
+
+for i in \
+`busybox find /sdcard -iname "*.db"`; do \
+  $sqlite ${i} 'VACUUM;' 2>/dev/null
+  $sqlite ${i} 'REINDEX;' 2>/dev/null
+done 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) DB vacuuming done at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# ondemand scheduler with my profile (Very High Performance) 
+for i in `ls -d /sys/devices/system/cpu/cpu?`; do
+  echo "ondemand" > $i/cpufreq/scaling_governor 2>/dev/null
+  sleep 1
+  chmod 644 $i/online 2>/dev/null
+  echo 1 > $i/online 2>/dev/null
+  chmod 444 $i/online 2>/dev/null      
+  sleep 1
+done 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) ondemand CPU governor with my profile set at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# noop scheduler with my profile
+for q in /sys/block/*; do
+  echo "noop" > $q/queue/scheduler;
+  echo 512 > $q/queue/read_ahead_kb;
+  echo 0 > $q/queue/rotational;
+  echo 2048 > $q/queue/nr_requests;
+done 
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) noop scheduler with my profile set at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Generate Entropy to 4096
+rngd -P -t 2 -T 1 -s 512 --fill-watermark=75% 2>/dev/null
+sleep 2
+echo -8 > /proc/$(pgrep rngd)/oom_adj 2>/dev/null
+renice 5 `pidof rngd` 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Large entropy generated at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# TCP Optimization Settings
+busybox chmod -f 644 /proc/sys/net/* 2>/dev/null
+busybox echo "0" >> /proc/sys/net/ipv4/ip_dynaddr 2>/dev/null
+busybox echo "0" >> /proc/sys/net/ipv4/ip_no_pmtu_disc 2>/dev/null
+busybox echo "0" >> /proc/sys/net/ipv4/tcp_ecn 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_fack 2>/dev/null
+busybox echo "4096" >> /proc/sys/net/ipv4/tcp_max_syn_backlog 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_moderate_rcvbuf 2>/dev/null
+busybox echo "187000 187000 187000" >> /proc/sys/net/ipv4/tcp_rmem 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_rfc1337 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_sack 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_timestamps 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_window_scaling 2>/dev/null
+busybox echo "1" >> /proc/sys/net/ipv4/tcp_no_metrics_save 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) TCP Optimizations done at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# fstrim data and cache partition
+mount -o remount,discard /data 2>/dev/null
+mount -o remount,discard /cache 2>/dev/null
+fstrim -v /data 2>/dev/null
+fstrim -v /cache 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) User File System strimed at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+sleep 15;
+
+# LMK tunning
+chown root /sys/module/lowmemorykiller/parameters/minfree
+chmod 777 /sys/module/lowmemorykiller/parameters/minfree
+installedram
+lightlmk
+chmod 664 /sys/module/lowmemorykiller/parameters/minfree
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Auto-LMK Tuner run at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# FS, Kernel & VM Tuner
+sysctl -q -w fs.nr_open=1053696 2>/dev/null
+sysctl -q -w fs.inotify.max_queued_events=32000 2>/dev/null
+sysctl -q -w fs.inotify.max_user_instances=256 2>/dev/null
+sysctl -q -w fs.inotify.max_user_watches=10240 2>/dev/null
+sysctl -q -w fs.lease-break-time=10 2>/dev/null
+sysctl -q -w fs.file-max=165164 2>/dev/null
+sysctl -q -w fs.lease-break-time=10 2>/dev/null
+sysctl -q -w fs.file-max=65536 2>/dev/null
+sysctl -q -w kernel.threads-max=525810 2>/dev/null
+sysctl -q -w kernel.random.write_wakeup_threshold=256 2>/dev/null
+sysctl -q -w kernel.random.read_wakeup_threshold=128 2>/dev/null
+sysctl -q -w kernel.sched_compat_yield=1 2>/dev/null
+sysctl -q -w kernel.panic=5 2>/dev/null
+sysctl -q -w kernel.panic_on_oops=1 2>/dev/null
+sysctl -q -w kernel.msgmni=2048 2>/dev/null
+sysctl -q -w kernel.msgmax=64000 2>/dev/null
+sysctl -q -w kernel.shmmni=4096 2>/dev/null
+sysctl -q -w kernel.shmall=2097152 2>/dev/null
+sysctl -q -w kernel.shmmax=268435456 2>/dev/null
+sysctl -q -w kernel.sem=500 512000 64 2048 2>/dev/null
+sysctl -q -w kernel.sched_features=24189 2>/dev/null
+sysctl -q -w kernel.hung_task_timeout_secs=30 2>/dev/null
+sysctl -q -w kernel.sched_latency_ns=18000000 2>/dev/null
+sysctl -q -w kernel.sched_min_granularity_ns=1500000 2>/dev/null
+sysctl -q -w kernel.sched_wakeup_granularity_ns=3000000 2>/dev/null
+sysctl -q -w kernel.sched_shares_ratelimit=256000 2>/dev/null
+sysctl -q -w kernel.sched_child_runs_first=0 2>/dev/null
+sysctl -q -w vm.dirty_ratio=60 2>/dev/null
+sysctl -q -w vm.dirty_background_ratio=60 2>/dev/null
+sysctl -q -w vm.oom_kill_allocating_task=1 2>/dev/null
+sysctl -q -w vm.overcommit_memory=1 2>/dev/null
+sysctl -q -w vm.page-cluster=8 2>/dev/null
+sysctl -q -w vm.drop_caches=3 2>/dev/null
+sysctl -q -w vm.min_free_kbytes=4096 2>/dev/null
+sysctl -q -w vm.panic_on_oom=0 2>/dev/null
+sysctl -q -w vm.dirty_expire_centisecs=1000 2>/dev/null
+sysctl -q -w vm.dirty_writeback_centisecs=2000 2>/dev/null
+sysctl -q -w vm.oom_kill_allocating_task=0 2>/dev/null
+sysctl -q -w vm.vfs_cache_pressure=1 2>/dev/null
+sysctl -q -w vm.min_free_order_shift=5 2>/dev/null
+sysctl -q -w vm.laptop_mode=0 2>/dev/null
+sysctl -q -w vm.block_dump=0 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) VM Tuner run at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Garbage Remover
+busybox rm -f /dev/log/*
+busybox rm -f /data/*.log
+busybox rm -f /data/*.txt
+busybox rm -f /cache/*.apk
+busybox rm -f /cache/*.tmp
+busybox rm -f /cache/recovery/*
+busybox rm -f /data/local/*.apk
+busybox rm -f /data/local/*.log
+busybox rm -f /data/local/tmp/*.apk
+busybox rm -f /data/backup/pending/*.tmp
+busybox rm -f /data/system/usagestats/*.txt
+busybox rm -f /data/system/dropbox/*.txt
+busybox rm -f /data/tombstones/*.log
+busybox rm -f /data/tombstones/*.txt
+busybox rm -f /data/dalvik-cache/*.apk
+busybox rm -f /data/dalvik-cache/*.tmp
+busybox rm -rf /sdcard/LOST.DIR
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Loggers removed at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# I/O Readahead Setting
+for i in "0:16" "0:18" "7:0" "7:1" "7:2" "7:3" "7:4" "7:5" "7:6" "7:7" "7:8" "7:9" "7:10" "7:11" "7:12" "179:0" "179:8" "179:16" "179:24" "179:32" "179:64" "179:96" "254:0" "254:1" "default" "mtd-romap" "mtd-rwmap" "mtd-unmap"; do
+if [ -e /sys/devices/virtual/bdi/${i}/read_ahead_kb ]; then
+  chmod -f 644 /sys/devices/virtual/bdi/${i}/read_ahead_kb 2>/dev/null
+  echo "512" >> /sys/devices/virtual/bdi/${i}/read_ahead_kb 2>/dev/null
+fi 2>/dev/null
+done 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Readahead for I/O set at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Re-mounts
+busybox mount -o remount,noatime,nobh,nodiratime,nodelalloc,noauto_da_alloc,barrier=0 /system 2>/dev/null
+busybox mount -o remount,noatime,nobh,nodiratime,nodelalloc,noauto_da_alloc,barrier=0 /cache 2>/dev/null
+busybox mount -o remount,noatime,nodiratime,delalloc,noauto_da_alloc,barrier=0 /data 2>/dev/null
+busybox mount -o remount,noatime,nodiratime auto /proc 2>/dev/null
+busybox mount -o remount,noatime,nodiratime auto /mnt/sdcard 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) EXT4 Partitions remount with noatime done at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# WiFi Deep Sleep
+iptables -tnat -A natctrl_nat_POSTROUTING -s 192.168.0.0/16 -o rmnet0 -j MASQUERADE 2>/dev/null
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) WiFi Deep Sleep completed at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Resource cleaner
+sync
+echo 1 > /proc/sys/vm/drop_caches;
+sync
+echo 10 > /proc/sys/vm/swappiness
+sleep 1;
+sync
+echo 1 > /proc/sys/vm/drop_caches;
+sync
+echo 0 > /proc/sys/vm/swappiness
+sleep 1;
+sync
+echo 1 > /proc/sys/vm/drop_caches;
+sync
+echo 20 > /proc/sys/vm/swappiness
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Resource cleaner run at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# cron job to run drop caches at every 5 minutes
+echo "root:x:0:0::/data/cron:/system/bin/sh" > /system/etc/passwd
+chmod 777 /system/etc/passwd 2>/dev/null
+ln -s /system/bin/ /bin 2>/dev/null
+
+busybox mkdir /data/cron 2>/dev/null
+
+# Now cron syntax is:
+# MIN HOUR DOM MON DOW CMD
+#
+# MIN  - Minute Field - (0-59)
+# HOUR - Hour Field   - (0-23)
+# DOM  - Day of Month - (1-31)
+# MON  - Month Field  - (1-12)
+# DOW  - Day of Week  - (0-6)
+# CMD  - Command      - Any command to be executed
+#
+# This runs the whole script after 1 hour
+echo "* */1 * * * freeall" > /data/cron/root
+# This runs drop cache on every 10 minutes
+echo "*/10 * * * * drop" >> /data/cron/root
+# This makes system soft reboot at 4:30 AM everyday
+echo "30 4 * * * pkill zygote" >> /data/cron/root
+chmod 777 /data/cron/root
+
+TZ=UCT-5:30
+export TZ
+crond -c /data/cron
+ 
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) crontab job started at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+# Deep Sleep
+#exec
+#(while true; do  
+#	AWAKE=`cat /sys/power/wait_for_fb_wake`;
+#	if [ "$AWAKE" = "awake" ]; then
+#    for i in `ls -d /sys/devices/system/cpu/cpu?`; do
+#      sleep 2 && echo 1 > $i/online 2>/dev/null
+#    done 2>/dev/null
+#    sleep 600
+#	fi
+#
+#	SLEEPING=`cat /sys/power/wait_for_fb_sleep`;
+#	if [ "$SLEEPING" = "sleeping" ]; then
+#    for i in `ls -d /sys/devices/system/cpu/cpu?`; do
+#      sleep 2 && echo 0 > $i/online 2>/dev/null
+#    done 2>/dev/null	    
+#	fi
+#done &);
+
+#echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+#echo "$num) Deep Sleep monitor started at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+#num=$(($num+1))
+
+sleep 15;
+
+# Free Memory
+freeall
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "$num) Memory cleaned at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PROJECT_XTREME_LOG_DIR
+num=$(($num+1))
+
+echo "" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "==========================================================" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "Project Xtreme(TM) - The Xtreme Performance Booster" | tee -a $PROJECT_XTREME_LOG_DIR
+echo "Copyright (C) Ajay Bhatia, 2013" | tee -a $PROJECT_XTREME_LOG_DIR
